@@ -1,0 +1,407 @@
+{
+	"info": {
+		"_postman_id": "b1a4bbfd-c27b-45ee-9a07-f63e190f9de4",
+		"name": "D2C Test Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20041980"
+	},
+	"item": [
+		{
+			"name": "D2C - API testing reference repository",
+			"item": [
+				{
+					"name": "Check if Azure DPS exists and it is configured",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Validate if DPS exists\", function(){\r",
+									"    (pm.response.to.have.status(200));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate if DPS is configured\", () => {\r",
+									"  const responseJson = pm.response.json();\r",
+									"  pm.expect(responseJson.name).to.eql(\"dps-test-costa-coffee-demo\");\r",
+									"  pm.expect(responseJson.location).to.eql(\"northeurope\");\r",
+									"  pm.expect(responseJson.properties.state).to.eql(\"Active\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate if DPS is linked to IoT Hub\", () => {\r",
+									"  const responseJson = pm.response.json();\r",
+									"  pm.expect(responseJson.properties.iotHubs).to.not.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzU5MzRjZmNmLWNmMDUtNDhiZS1iNjMzLWFhMmYxMzkzMzNmMi8iLCJpYXQiOjE2NzY5MDIzODIsIm5iZiI6MTY3NjkwMjM4MiwiZXhwIjoxNjc2OTA2MzQ5LCJhY3IiOiIxIiwiYWlvIjoiQVZRQXEvOFRBQUFBSjRuWCtzL2kyUDJRZ0kwZWhpWHhJOGVqVXNmVFBzVkFaUG5iQUtqcHNpdy9hVzJGYUU4VkJHSWp2U3NYSlBSd2RzMCszUUxOTm1HRUdwMTRmbjE3cEtEeVIyZlE4c0pVUlpoMEhMZEhIREU9IiwiYW1yIjpbInB3ZCIsIm1mYSJdLCJhcHBpZCI6IjE4ZmJjYTE2LTIyMjQtNDVmNi04NWIwLWY3YmYyYjM5YjNmMyIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiVnJhc2FjayBQZXJlaXJhIFJvY2hhIiwiZ2l2ZW5fbmFtZSI6Ik1hdGhldXMiLCJncm91cHMiOlsiMGJkMzM4MGMtMTk1NS00MDZlLTkwMTEtYzJmNDFiNTUzMjkxIiwiYzhhOGExNTItNDM3Ny00NTU2LTg5YjktYzg3YzY1NDEyNDVmIiwiYTk3M2NlY2QtYjI1OS00ZTgzLWI2NTgtMjRlODUzMGY5YjI2Il0sImlwYWRkciI6IjE3Ny4yMjMuMzEuMTAwIiwibmFtZSI6Ik1hdGhldXMgVnJhc2FjayBQZXJlaXJhIFJvY2hhIiwib2lkIjoiZGM4YTY5MTItN2UwZi00YWNmLTg5MzUtYTYxOWQ0MTAyOWQ1Iiwib25wcmVtX3NpZCI6IlMtMS01LTIxLTE1NzU2Mjk1NTctMjkyMzI3Njc3Ny0xMjkzMDcyMDE1LTI2MDcwIiwicHVpZCI6IjEwMDMyMDAxRDJFOEYzRTAiLCJyaCI6IjAuQVRRQXo4ODBXUVhQdmtpMk02b3ZFNU16OGtaSWYza0F1dGRQdWtQYXdmajJNQk0wQUZnLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6IjRHRmpxUUlILUlNTmZwR1g2NXU3M09va29saEZ1LXJpZ3VHQmRySjlSQWMiLCJ0aWQiOiI1OTM0Y2ZjZi1jZjA1LTQ4YmUtYjYzMy1hYTJmMTM5MzMzZjIiLCJ1bmlxdWVfbmFtZSI6Im12cmFzYWNrQGNpYW5kdC5jb20iLCJ1cG4iOiJtdnJhc2Fja0BjaWFuZHQuY29tIiwidXRpIjoiSkRBcGJTVURBa200RXJiMU4wRldBQSIsInZlciI6IjEuMCIsIndpZHMiOlsiYjc5ZmJmNGQtM2VmOS00Njg5LTgxNDMtNzZiMTk0ZTg1NTA5Il0sInhtc190Y2R0IjoxNDI3NzQ2MDEyfQ.IYo_FKz5SjaZAavXbGCL8JNuOzl9Rmqs2oRY0Nnx-xmNRPZmkKJiQ3H2hv6xyzQOzhDKKGEsz-Y5phe6jlO8KYz45IMSjP9QUx6lceNh80UC8AKeb1_AC0UhCD1zkNJaqyo9qXyFndWn9RCTBp0D7PN47Ynh02GEkX6ug21CA23OKiuIwZblgio6asb9cDyp7gagy5ktJKwEUb5-5rr6LgUy1FqrJpWpanbfyHtRDRfPma4OgEdLzOLJ1eoHt3An1VAyeQKXi7GhNi_yIZdvDJxSNKM_eOetrrU9x3DCpxCqdGY0RLyo0gFX8kPI-9n9TaTtytHqLGGKnvikQYuiRg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://management.azure.com/subscriptions/{{rg-subscription-id}}/resourceGroups/{{rg-name}}/providers/Microsoft.Devices/provisioningServices/{{dps-name}}?api-version=2018-01-22",
+							"protocol": "https",
+							"host": [
+								"management",
+								"azure",
+								"com"
+							],
+							"path": [
+								"subscriptions",
+								"{{rg-subscription-id}}",
+								"resourceGroups",
+								"{{rg-name}}",
+								"providers",
+								"Microsoft.Devices",
+								"provisioningServices",
+								"{{dps-name}}"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "2018-01-22"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Device on Azure DPS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"device registered, status code is 202.\", function(){\r",
+									"    (pm.response.to.have.status(202));\r",
+									"});\r",
+									"\r",
+									"//pm.expect(pm.response.code).to.be.oneOf([201,202]);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var resourceUri = pm.variables.get(\"dps-scopeId\") + \"/registrations/\" + pm.variables.get(\"new-device\"); // The resource uri\r",
+									"    var deviceId = pm.variables.get(\"new-device\");\r",
+									"    \r",
+									"    resourceUri = encodeURIComponent(resourceUri.toLowerCase()); // Encode the url\r",
+									"    \r",
+									"    var expires = Math.ceil((Date.now() / 1000) + 10 * 60); // Expire the token 60 minutes from now\r",
+									"    \r",
+									"    var toSign = resourceUri + \"\\n\" + expires; // this is the string format to gen signature from\r",
+									"    \r",
+									" var crypted = CryptoJS.HmacSHA256(deviceId, CryptoJS.enc.Base64.parse(pm.variables.get(\"dps-symkey\")));\r",
+									"\r",
+									"var signature = CryptoJS.HmacSHA256(toSign, crypted); // The signature generated from the decodedKey\r",
+									"var encodedUri = encodeURIComponent(CryptoJS.enc.Base64.stringify(signature)); // The url encoded version of the Base64 signature\r",
+									"    \r",
+									"\r",
+									"// Construct authorization string (shared access signature)\r",
+									"var iotHubSasToken = \"SharedAccessSignature sr=\" + resourceUri + \"&sig=\" + encodedUri + \"&se=\" + expires +\"&skn=registration\";\r",
+									"\r",
+									"console.log(iotHubSasToken);\r",
+									"postman.setEnvironmentVariable(\"dps-token\", iotHubSasToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{dps-token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"registrationId\": \"{{new-device}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{global-dps-ep}}/{{dps-scopeId}}/registrations/{{new-device}}/register?api-version=2019-03-31",
+							"protocol": "https",
+							"host": [
+								"{{global-dps-ep}}"
+							],
+							"path": [
+								"{{dps-scopeId}}",
+								"registrations",
+								"{{new-device}}",
+								"register"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "2019-03-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Device on Azure Hub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"device created, status code is 200.\", function(){\r",
+									"    (pm.response.to.have.status(200));\r",
+									"});\r",
+									"\r",
+									"//pm.expect(pm.response.code).to.be.oneOf([201,202]);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "SharedAccessSignature sr=referenceapp-iot-hub-north-eu.azure-devices.net&sig=T%2FreIPuvB6rVD36y4gcnBh4PDscnlUig9ijQCp7vgoY%3D&skn=iothubowner&se=1676989818",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceId\": \"{{new-device}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{iothub-north}}/devices/{{new-device}}?api-version={{api-version}}",
+							"protocol": "https",
+							"host": [
+								"{{iothub-north}}"
+							],
+							"path": [
+								"devices",
+								"{{new-device}}"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "{{api-version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Device Data from Azure Hub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (responseCode.code >= 200 && responseCode.code <= 299){\r",
+									"    var jsonData = JSON.parse(responseBody);\r",
+									"    postman.setEnvironmentVariable(\"etag\",\"\\\"\" + jsonData.etag.toString()+ \"\\\"\");\r",
+									"    pm.test(\"device data retrieved, status code is 200.\", function(){\r",
+									"    (pm.response.to.have.status(200));});\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "SharedAccessSignature sr=referenceapp-iot-hub-north-eu.azure-devices.net&sig=T%2FreIPuvB6rVD36y4gcnBh4PDscnlUig9ijQCp7vgoY%3D&skn=iothubowner&se=1676989818",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{iothub-north}}/devices/{{new-device}}?api-version={{api-version}}",
+							"protocol": "https",
+							"host": [
+								"{{iothub-north}}"
+							],
+							"path": [
+								"devices",
+								"{{new-device}}"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "{{api-version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message to Azure Hub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"message sent, status code is 204.\", function(){\r",
+									"    (pm.response.to.have.status(204));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "SharedAccessSignature sr=referenceapp-iot-hub-north-eu.azure-devices.net%2Fdevices%2Ftest-device-donotdelete&sig=0wxPjfqJxJcnBWC6ChfJRox6Zlq6m25YFVa1fUy7RGw%3D&se=1676991470",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"messageType\": \"Sales\",\r\n    \"id\": \"2e880815-e7979-4756-836f-79f5f8d96932\",\r\n    \"messageId\": \"000001\",\r\n    \"timeStamp\": \"2022-04-04T14:17:26Z\",\r\n    \"machineNo\": \"MMMMMYYYmmNNNNN\",\r\n    \"vendDateTime\": \"2022-04-04T15:17:26Z\",\r\n    \"vendCycleDuration\": \"00:01:14.7400000\",\r\n    \"vendExtractionTime\": \"00:00:52.7800000\",\r\n    \"podBarcode\": \"0000\",\r\n    \"buttonPress\": 1,\r\n    \"waterDispensed\": 20,\r\n    \"milkDispensed\": 30,\r\n    \"succeeded\": 1,\r\n    \"serviceDelivery\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{iothub-north}}/devices/{{new-device}}/messages/events?api-version={{api-version}}",
+							"protocol": "https",
+							"host": [
+								"{{iothub-north}}"
+							],
+							"path": [
+								"devices",
+								"{{new-device}}",
+								"messages",
+								"events"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "{{api-version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Device from Azure Hub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"device deleted, status code is 204.\", function(){\r",
+									"    (pm.response.to.have.status(204));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "SharedAccessSignature sr=referenceapp-iot-hub-north-eu.azure-devices.net&sig=T%2FreIPuvB6rVD36y4gcnBh4PDscnlUig9ijQCp7vgoY%3D&skn=iothubowner&se=1676989818",
+								"type": "text"
+							},
+							{
+								"key": "If-Match",
+								"value": "{{etag}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"etag\": \"{{etag}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{iothub-north}}/devices/{{new-device}}?api-version={{api-version}}",
+							"protocol": "https",
+							"host": [
+								"{{iothub-north}}"
+							],
+							"path": [
+								"devices",
+								"{{new-device}}"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "{{api-version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
