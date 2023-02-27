@@ -1,0 +1,320 @@
+{
+	"info": {
+		"_postman_id": "b1a4bbfd-c27b-45ee-9a07-f63e190f9de4",
+		"name": "D2C Test Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20041980"
+	},
+	"item": [
+		{
+			"name": "D2C - API testing reference repository",
+			"item": [
+				{
+					"name": "Create Device on Azure DPS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"device registered\", function(){\r",
+									"    (pm.response.to.have.status(202));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var resourceUri = pm.variables.get(\"dps-scopeId\") + \"/registrations/\" + pm.variables.get(\"new-device\"); // The resource uri\r",
+									"    var deviceId = pm.variables.get(\"new-device\");\r",
+									"    \r",
+									"    resourceUri = encodeURIComponent(resourceUri.toLowerCase()); // Encode the url\r",
+									"    \r",
+									"    var expires = Math.ceil((Date.now() / 1000) + 10 * 60); // Expire the token 60 minutes from now\r",
+									"    \r",
+									"    var toSign = resourceUri + \"\\n\" + expires; // this is the string format to gen signature from\r",
+									"    \r",
+									" var crypted = CryptoJS.HmacSHA256(deviceId, CryptoJS.enc.Base64.parse(pm.variables.get(\"dps-symkey\")));\r",
+									"\r",
+									"var signature = CryptoJS.HmacSHA256(toSign, crypted); // The signature generated from the decodedKey\r",
+									"var encodedUri = encodeURIComponent(CryptoJS.enc.Base64.stringify(signature)); // The url encoded version of the Base64 signature\r",
+									"\r",
+									"// Construct authorization string (shared access signature)\r",
+									"var iotHubSasToken = \"SharedAccessSignature sr=\" + resourceUri + \"&sig=\" + encodedUri + \"&se=\" + expires +\"&skn=registration\";\r",
+									"\r",
+									"console.log(iotHubSasToken);\r",
+									"postman.setEnvironmentVariable(\"dps-token\", iotHubSasToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{dps-token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"registrationId\": \"{{new-device}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{global-dps-ep}}/{{dps-scopeId}}/registrations/{{new-device}}/register?api-version=2019-03-31",
+							"protocol": "https",
+							"host": [
+								"{{global-dps-ep}}"
+							],
+							"path": [
+								"{{dps-scopeId}}",
+								"registrations",
+								"{{new-device}}",
+								"register"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "2019-03-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Device Data from Azure Hub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (responseCode.code >= 200 && responseCode.code <= 299){\r",
+									"    var jsonData = JSON.parse(responseBody);\r",
+									"    postman.setEnvironmentVariable(\"etag\",\"\\\"\" + jsonData.etag.toString()+ \"\\\"\");\r",
+									"    postman.setEnvironmentVariable(\"device-symkey\", jsonData.authentication.symmetricKey.primaryKey.toString());\r",
+									"    pm.test(\"device data retrieved\", function(){\r",
+									"    (pm.response.to.have.status(200));});\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Validate if the device is up and running\", () => {\r",
+									"  const responseJson = pm.response.json();\r",
+									"  pm.expect(responseJson.deviceId).to.eql(pm.variables.get(\"new-device\"));\r",
+									"  pm.expect(responseJson.status).to.eql(\"enabled\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var resourceUri = pm.variables.get(\"iothub-north\"); // The resource uri\r",
+									"    \r",
+									"    resourceUri = encodeURIComponent(resourceUri.toLowerCase()); // Encode the url\r",
+									"    \r",
+									"    var expires = Math.ceil((Date.now() / 1000) + 10 * 60); // Expire the token 60 minutes from now\r",
+									"    \r",
+									"    var toSign = resourceUri + \"\\n\" + expires; // this is the string format to gen signature from\r",
+									"\r",
+									"const signature = CryptoJS.HmacSHA256(toSign, CryptoJS.enc.Base64.parse(pm.variables.get(\"hub-policykey\")));\r",
+									"const encodedUri = encodeURIComponent(CryptoJS.enc.Base64.stringify(signature));\r",
+									"\r",
+									"\r",
+									"// Construct authorization string (shared access signature)\r",
+									"var iotHubSasToken = \"SharedAccessSignature sr=\" + resourceUri + \"&sig=\" + encodedUri + \"&skn=iothubowner\" + \"&se=\" + expires;\r",
+									"\r",
+									"console.log(iotHubSasToken);\r",
+									"postman.setEnvironmentVariable(\"hub-token\", iotHubSasToken);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{hub-token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{iothub-north}}/devices/{{new-device}}?api-version={{api-version}}",
+							"protocol": "https",
+							"host": [
+								"{{iothub-north}}"
+							],
+							"path": [
+								"devices",
+								"{{new-device}}"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "{{api-version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message to Azure Hub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"message sent\", function(){\r",
+									"    (pm.response.to.have.status(204));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var resourceUri = pm.variables.get(\"iothub-north\") + \"/devices/\"+ pm.variables.get(\"new-device\")\r",
+									" // The resource uri\r",
+									"    var deviceId = pm.variables.get(\"new-device\");\r",
+									"    \r",
+									"    resourceUri = encodeURIComponent(resourceUri.toLowerCase()); // Encode the url\r",
+									"    \r",
+									"    var expires = Math.ceil((Date.now() / 1000) + 10 * 60); // Expire the token 60 minutes from now\r",
+									"    \r",
+									"    var toSign = resourceUri + \"\\n\" + expires; // this is the string format to gen signature from\r",
+									"\r",
+									"const signature = CryptoJS.HmacSHA256(toSign, CryptoJS.enc.Base64.parse(pm.variables.get(\"device-symkey\")));\r",
+									"const encodedUri = encodeURIComponent(CryptoJS.enc.Base64.stringify(signature));\r",
+									"\r",
+									"\r",
+									"// Construct authorization string (shared access signature)\r",
+									"var iotHubSasToken = \"SharedAccessSignature sr=\" + resourceUri + \"&sig=\" + encodedUri + \"&se=\" + expires;\r",
+									"\r",
+									"console.log(iotHubSasToken);\r",
+									"postman.setEnvironmentVariable(\"device-token\", iotHubSasToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{device-token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"messageType\": \"Sales\",\r\n    \"id\": \"2e880815-e7979-4756-836f-79f5f8d96932\",\r\n    \"messageId\": \"000001\",\r\n    \"timeStamp\": \"2022-04-04T14:17:26Z\",\r\n    \"machineNo\": \"MMMMMYYYmmNNNNN\",\r\n    \"vendDateTime\": \"2022-04-04T15:17:26Z\",\r\n    \"vendCycleDuration\": \"00:01:14.7400000\",\r\n    \"vendExtractionTime\": \"00:00:52.7800000\",\r\n    \"podBarcode\": \"0000\",\r\n    \"buttonPress\": 1,\r\n    \"waterDispensed\": 20,\r\n    \"milkDispensed\": 30,\r\n    \"succeeded\": 1,\r\n    \"serviceDelivery\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{iothub-north}}/devices/{{new-device}}/messages/events?api-version={{api-version}}",
+							"protocol": "https",
+							"host": [
+								"{{iothub-north}}"
+							],
+							"path": [
+								"devices",
+								"{{new-device}}",
+								"messages",
+								"events"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "{{api-version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Device from Azure Hub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"device deleted\", function(){\r",
+									"    (pm.response.to.have.status(204));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{hub-token}}",
+								"type": "text"
+							},
+							{
+								"key": "If-Match",
+								"value": "{{etag}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"etag\": \"{{etag}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{iothub-north}}/devices/{{new-device}}?api-version={{api-version}}",
+							"protocol": "https",
+							"host": [
+								"{{iothub-north}}"
+							],
+							"path": [
+								"devices",
+								"{{new-device}}"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "{{api-version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
